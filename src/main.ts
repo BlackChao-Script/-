@@ -16,7 +16,17 @@ import {
   ElMain,
   ElMenu,
   ElSubmenu,
-  ElMenuItem
+  ElMenuItem,
+  ElBreadcrumb,
+  ElBreadcrumbItem,
+  ElCard,
+  ElRow,
+  ElCol,
+  ElTable,
+  ElTableColumn,
+  ElSwitch,
+  ElTooltip,
+  ElPagination,
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -25,6 +35,7 @@ import './assets/css/global.css'
 
 const app = createApp(App)
 app.use(router)
+//! 注册使用Element-plus组件
 app.component(ElButton.name, ElButton)
 app.component(ElForm.name, ElForm)
 app.component(ElFormItem.name, ElFormItem)
@@ -36,5 +47,16 @@ app.component(ElMain.name, ElMain)
 app.component(ElMenu.name, ElMenu)
 app.component(ElSubmenu.name, ElSubmenu)
 app.component(ElMenuItem.name, ElMenuItem)
+app.component(ElBreadcrumb.name, ElBreadcrumb)
+app.component(ElBreadcrumbItem.name, ElBreadcrumbItem)
+app.component(ElCard.name, ElCard)
+app.component(ElRow.name, ElRow)
+app.component(ElCol.name, ElCol)
+app.component(ElTable.name, ElTable)
+app.component(ElTableColumn.name, ElTableColumn)
+app.component(ElSwitch.name, ElSwitch)
+app.component(ElTooltip.name, ElTooltip)
+app.component(ElPagination.name, ElPagination)
+
 app.config.globalProperties.$message = ElMessage
 app.mount('#app')

@@ -8,6 +8,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/home',
     component: () => import('../views/Home.vue'),
+    redirect: '/home/welcome',
+    children: [
+      {
+        path: 'welcome',
+        component: () => import('../views/Welcome.vue'),
+      },
+      {
+        path: 'users',
+        component: () => import('../views/Users.vue'),
+      },
+    ],
   },
 ]
 //! 工厂函数创建router实例

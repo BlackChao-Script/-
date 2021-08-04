@@ -94,7 +94,7 @@ const login = () => {
         message: '登录成功',
         type: 'success',
       })
-      window.sessionStorage.setItem('token',res.data.token)
+      window.sessionStorage.setItem('token', res.data.token)
       $router.push('/home')
     })
   })
@@ -105,7 +105,9 @@ const login = () => {
 .login_container {
   position: relative;
   height: 100%;
-  background: linear-gradient(#141e30, #243b55);
+  background: linear-gradient(125deg, #141e30, #243b55, #0d141f);
+  background-size: 400%;
+  animation: bganimation 5s infinite;
   .login_box {
     position: absolute;
     top: 50%;
@@ -136,6 +138,17 @@ const login = () => {
         align-items: center;
       }
     }
+  }
+}
+@keyframes bganimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 </style>
