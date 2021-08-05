@@ -1,5 +1,5 @@
 <template>
-  <el-aside :width="isCollapse ? '64px' : '200px'">
+  <el-aside :width="isCollapse ? '64px' : '170px'">
     <div class="toggle_button" @click="toggleCollapse">
       <i class="el-icon-s-fold" v-if="!isCollapse"></i>
       <i class="el-icon-s-unfold" v-else-if="isCollapse"></i>

@@ -27,6 +27,9 @@ import {
   ElSwitch,
   ElTooltip,
   ElPagination,
+  ElDialog,
+  ElButtonGroup,
+  ElMessageBox,
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -57,6 +60,10 @@ app.component(ElTableColumn.name, ElTableColumn)
 app.component(ElSwitch.name, ElSwitch)
 app.component(ElTooltip.name, ElTooltip)
 app.component(ElPagination.name, ElPagination)
+app.component(ElDialog.name, ElDialog)
+app.component(ElButtonGroup.name, ElButtonGroup)
+app.component(ElMessageBox.name, ElMessageBox)
 
 app.config.globalProperties.$message = ElMessage
+app.config.globalProperties.$confirm = ElMessageBox.confirm
 app.mount('#app')

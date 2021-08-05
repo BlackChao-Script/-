@@ -18,7 +18,9 @@
         </el-input>
       </el-col>
       <el-col :span="4">
-        <el-button type="info" plain>添加用户</el-button>
+        <el-button type="info" plain @click="dialogVisible = true"
+          >添加用户</el-button
+        >
       </el-col>
     </el-row>
     <!-- 用户列表区 -->
@@ -40,8 +42,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template #default="scope">
-          <el-row :gutter="30">
-            <el-col :span="7">
+          <el-row type="flex" justify="space-around">
+            <el-col :span="5">
               <el-tooltip content="编辑" placement="top" effect="light">
                 <el-button
                   type="primary"
@@ -51,7 +53,7 @@
                 ></el-button>
               </el-tooltip>
             </el-col>
-            <el-col :span="7">
+            <el-col :span="5">
               <el-tooltip content="分配角色" placement="top" effect="light">
                 <el-button
                   type="warning"
@@ -60,9 +62,14 @@
                 ></el-button>
               </el-tooltip>
             </el-col>
-            <el-col :span="7">
+            <el-col :span="5">
               <el-tooltip content="删除" placement="top" effect="light">
-                <el-button type="danger" icon="el-icon-delete" circle>
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  @click="removerUserbyId(scope.row.id)"
+                >
                 </el-button>
               </el-tooltip>
             </el-col>
@@ -82,15 +89,86 @@
     >
     </el-pagination>
   </el-card>
+  <!-- 添加用户的对话框 -->
+  <el-dialog
+    title="添加用户"
+    v-model="dialogVisible"
+    width="50%"
+    @close="resetAddForm"
+  >
+    <!-- 内容主体区 -->
+    <el-form
+      ref="addForm"
+      :model="Froms.addFrom"
+      :rules="Froms.addFormRules"
+      label-width="70px"
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="Froms.addFrom.username"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="Froms.addFrom.password"></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="Froms.addFrom.email"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="phonenumber">
+        <el-input v-model="Froms.addFrom.phonenumber"></el-input>
+      </el-form-item>
+    </el-form>
+    <!-- 底部区 -->
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定 </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <!-- 编辑用户对话框 -->
+  <el-dialog
+    title="修改用户信息"
+    v-model="dialogVisiblea"
+    width="50%"
+    @close="resetAddForma"
+  >
+    <!-- 内容主体区 -->
+    <el-form
+      ref="alterForm"
+      :model="Fromsa.alterFroms"
+      :rules="Fromsa.alterRules"
+      label-width="70px"
+    >
+      <el-form-item label="用户名">
+        <el-input
+          v-model="Fromsa.alterFroms.username"
+          :disabled="true"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="Fromsa.alterFroms.email"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="mobile">
+        <el-input v-model="Fromsa.alterFroms.mobile"></el-input>
+      </el-form-item>
+    </el-form>
+    <!-- 底部区 -->
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisiblea = false">取 消</el-button>
+        <el-button type="primary" @click="alterUser">确 定 </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
-
 <script setup lang="ts">
 import { onMounted, reactive, getCurrentInstance, ref } from '@vue/runtime-core'
 //! 引入网络请求方法
-import { getuserDataList } from '../../api/userDataList'
-import { setMgState } from '../../api/changeMgState'
-
-//! 搜索与添加区
+import { getuserDataList } from '../../api/users/userDataList'
+import { setMgState } from '../../api/users/changeMgState'
+import { addUsers } from '../../api/users/addUsers'
+import { getinquireUser } from '../../api/users/inquireUser'
+import { setUser } from '../../api/users/compileUsers'
+import { deleteUser } from '../../api/users/deleteUser'
 
 //! 用户列表区
 //* 传入请求方式的参数
@@ -131,9 +209,27 @@ const changeSwitch = (switchInfo: any) => {
     proxy.$message.success('更新用户状态成功')
   })
 }
-//* 用户数据编辑
-const handleEdit = (index: any, row: any) => {
-  console.log(index)
+//* 根据id删除用户数据
+const removerUserbyId = (id: number) => {
+  //? 弹框询问用户是否删除数据
+  proxy
+    .$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    .then(() => {
+      deleteUser(id).then((res: any) => {
+        if (res.meta.status !== 200) {
+          return proxy.$message.error('删除失败')
+        }
+        proxy.$message.success('删除成功')
+        getuserDataLists()
+      })
+    })
+    .catch(() => {
+      proxy.$message.info('已取消删除')
+    })
 }
 
 //! 分页区
@@ -146,6 +242,142 @@ const handleSizeChange = (newSize: any) => {
 const handleCurrentChange = (newPage: any) => {
   queryInfo.pagenum = newPage
   getuserDataLists()
+}
+
+//! 添加用户对话框
+//* 控制添加用户对话框的显示与隐藏
+const dialogVisible = ref<boolean>(false)
+//* 监听添加用户对话框的关闭事件(重置添加表单)
+const addForm = ref<any>(null)
+const resetAddForm = () => {
+  addForm.value.resetFields()
+}
+//* 点击按钮,添加新用户
+const addUser = () => {
+  addForm.value.validate((valid: any) => {
+    //& 执行失败
+    if (!valid) return
+    //& 发起网络请求添加新用户
+    addUsers(
+      Froms.addFrom.username,
+      Froms.addFrom.password,
+      Froms.addFrom.email,
+      Froms.addFrom.phonenumber
+    ).then((res) => {
+      if (res.meta.status != 201) return proxy.$message.error('添加失败')
+      proxy.$message.success({
+        message: '添加成功',
+        type: 'success',
+      })
+      //& 隐藏添加用户的对话框
+      dialogVisible.value = false
+      //& 重新获取用户数据
+      getuserDataLists()
+    })
+  })
+}
+//* 自定义表单验证规则
+const validatePhone = reactive<any>({
+  validatePhonenumber: (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请输入密码'))
+    } else if (!/^1\d{10}$/.test(value)) {
+      callback(new Error('手机号格式错误'))
+    } else {
+      callback()
+    }
+  },
+})
+//* 用户表单数据
+const Froms = reactive<any>({
+  //& 添加用户表单数据
+  addFrom: {
+    username: '',
+    password: '',
+    email: '',
+    phonenumber: '',
+  },
+  //& 添加表单的验证规则对象
+  addFormRules: {
+    username: [
+      { required: true, message: '请输入用户名', trigger: 'blur' },
+      {
+        min: 3,
+        max: 10,
+        message: '用户名的长度在3~10个字符之间',
+        trigger: 'blur',
+      },
+    ],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' },
+      { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' },
+    ],
+    email: [
+      { required: true, message: '请输入邮箱', trigger: 'blur' },
+      {
+        type: 'email',
+        message: '请输入正确的邮箱地址',
+        trigger: ['blur', 'change'],
+      },
+    ],
+    phonenumber: [
+      { validator: validatePhone.validatePhonenumber, trigger: 'blur' },
+    ],
+  },
+})
+
+//! 编辑用户信息对话框
+//* 控制添加用户对话框的显示与隐藏
+const dialogVisiblea = ref<boolean>(false)
+//* 监听添加用户对话框的关闭事件(重置添加表单)
+const alterForm = ref<any>(null)
+const resetAddForma = () => {
+  alterForm.value.resetFields()
+}
+//* 编辑用户数据
+const Fromsa = reactive<any>({
+  alterFroms: {},
+  alterRules: {
+    email: [
+      { required: true, message: '请输入邮箱', trigger: 'blur' },
+      {
+        type: 'email',
+        message: '请输入正确的邮箱地址',
+        trigger: ['blur', 'change'],
+      },
+    ],
+    mobile: [{ validator: validatePhone.validatePhonenumber, trigger: 'blur' }],
+  },
+})
+//* 用户数据编辑
+const handleEdit = (index: any, row: any) => {
+  dialogVisiblea.value = true
+  getinquireUser(row.id).then((res) => {
+    Fromsa.alterFroms = res.data
+  })
+}
+//* 点击按钮修改用户信息
+const alterUser = () => {
+  alterForm.value.validate((valid: any) => {
+    if (!valid) return
+    setUser(
+      Fromsa.alterFroms.id,
+      Fromsa.alterFroms.email,
+      Fromsa.alterFroms.mobile
+    ).then((res) => {
+      if (res.meta.status !== 200) {
+        return proxy.$message.error('修改用户信息失败')
+      }
+      proxy.$message.success({
+        message: '修改成功',
+        type: 'success',
+      })
+      //& 隐藏添加用户的对话框
+      dialogVisiblea.value = false
+      //& 重新获取用户数据
+      getuserDataLists()
+    })
+  })
 }
 </script>
 
