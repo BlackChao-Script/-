@@ -1,6 +1,9 @@
 <template>
   <!-- 面包屑导航区 -->
-  <breadcrumb></breadcrumb>
+  <breadcrumb>
+    <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+    <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+  </breadcrumb>
   <!--卡片视图区 -->
   <card></card>
 </template>

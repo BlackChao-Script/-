@@ -18,6 +18,14 @@ const routes: Array<RouteRecordRaw> = [
         path: 'users',
         component: () => import('../views/Users.vue'),
       },
+      {
+        path: 'roles',
+        component: () => import('../views/power/roles.vue'),
+      },
+      {
+        path: 'rights',
+        component: () => import('../views/power/rights.vue'),
+      },
     ],
   },
 ]
