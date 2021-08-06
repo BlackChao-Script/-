@@ -75,6 +75,7 @@
                   type="warning"
                   icon="el-icon-bank-card"
                   circle
+                  @click="allotRole(scope.row)"
                 ></el-button>
               </el-tooltip>
             </el-col>
@@ -155,6 +156,30 @@
       </span>
     </template>
   </el-dialog>
+  <!-- 点击分配角色权限区 -->
+  <el-dialog
+    title="分配角色权限"
+    v-model="data.dialogVisibleab"
+    width="30%"
+    @close="setRightDialogColsed"
+  >
+    <!-- 权限树形控件 -->
+    <el-tree
+      :data="data.roleJurisdiction"
+      :props="data.treeProps"
+      show-checkbox
+      node-key="id"
+      default-expand-all
+      :default-checked-keys="data.defkeys"
+      ref="treeRefFrom"
+    ></el-tree>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.dialogVisibleab = false">取 消</el-button>
+        <el-button type="primary" @click="allotRights">确 定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -169,18 +194,33 @@ const data = reactive<any>({
   dialogVisible: false,
   //* 控制编辑用户对话框的显示与隐藏
   dialogVisiblea: false,
+  //* 控制分配角色权限用户对话框的显示与隐藏
+  dialogVisibleab: false,
   //* 添加角色数据
   addRoleList: {
     roleName: '',
     roleDesc: '',
   },
-  //* 编辑用户数据
-  revealCompile: [],
   //* 添加表单的验证规则对象
   addUserRules: {
     roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
     roleDesc: [{ required: true, message: '请输入角色描述', trigger: 'blur' }],
   },
+  //* 编辑角色数据
+  revealCompile: [],
+  //* 角色权限数据
+  roleJurisdiction: [],
+  //* 树形控件的属性绑定对象
+  treeProps: {
+    label: 'authName',
+    children: 'children',
+  },
+  //* 默认选中的id值数组
+  defkeys: [],
+  //* 点击选中的id值数组
+  keys: [],
+  //* 角色Id
+  roleId: '',
 })
 //* 监听添加角色对话框的关闭事件(显示和隐藏)
 const ruleForm = ref<any>(null)
@@ -219,6 +259,7 @@ const revealCompileRuleForm = ref<any>(null)
 const resetUsera = () => {
   revealCompileRuleForm.value.resetFields()
 }
+
 //* 根据id点击编辑角色弹出编辑框并查询角色信息
 const revealCompileRole = (row: any) => {
   //& 显示编辑角色对话框
@@ -264,9 +305,6 @@ const deleteRole = (id: any) => {
     })
     .catch(() => proxy.$message.info('已取消删除'))
 }
-//* 在生命周期函数中调用请求方法
-onMounted(getRolesLis)
-//! 方法
 //* 根据id删除用户权限
 const closeroles = (role: any, rightId: any) => {
   //? 弹框询问用户是否删除数据
@@ -287,6 +325,55 @@ const closeroles = (role: any, rightId: any) => {
     })
     .catch(() => proxy.$message.info('已取消删除'))
 }
+//* 展示分配角色权限对话框
+const allotRole = (role: any) => {
+  //* 保存Id
+  data.roleId = role.id
+  //* 递归获取三级权限节点的Id
+  getLeafKeys(role, data.defkeys)
+  //* 显示分配角色权限
+  data.dialogVisibleab = true
+  //* 请求权限数据
+  proxy.$http.get(`rights/tree`).then((res: any) => {
+    data.roleJurisdiction = res.data
+  })
+}
+//* 通过递归的形式,获取角色下所有三级节点权限
+const getLeafKeys = (node: any, arr: any) => {
+  //& 如果当前node不包含children属性就时三级权限
+  if (!node.children) {
+    return arr.push(node.id)
+  }
+  node.children.forEach((item: any) => getLeafKeys(item, arr))
+}
+//* 监听分配权限对话框的关闭事件
+const setRightDialogColsed = () => {
+  data.defkeys = []
+}
+const treeRefFrom = ref<any>(null)
+//* 点击为角色分配权限
+const allotRights = () => {
+  //& 通过点击事件把获取到的id值赋值给data.key
+  data.key = [
+    ...treeRefFrom.value.getCheckedKeys(),
+    ...treeRefFrom.value.getHalfCheckedKeys(),
+  ]
+  //& 变为字符串格式
+  const idStr = data.key.join(',')
+  //& 获取角色授权
+  proxy.$http
+    .post(`roles/${data.roleId}/rights`, {
+      rids: idStr,
+    })
+    .then(() => {
+      proxy.$message.success('分配权限成功')
+      getRolesLis()
+      data.dialogVisibleab = false
+    })
+    .catch(() => proxy.$message.error('分配权限失败'))
+}
+//* 在生命周期函数中调用请求方法
+onMounted(getRolesLis)
 </script>
 
 <style scoped lang="scss">

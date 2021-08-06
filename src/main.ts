@@ -33,6 +33,7 @@ import {
   ElButtonGroup,
   ElMessageBox,
   ElTag,
+  ElTree
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -67,6 +68,8 @@ app.component(ElDialog.name, ElDialog)
 app.component(ElButtonGroup.name, ElButtonGroup)
 app.component(ElMessageBox.name, ElMessageBox)
 app.component(ElTag.name, ElTag)
+app.component(ElTree.name, ElTree)
+
 //! 注册全局方法
 app.config.globalProperties.$message = ElMessage
 app.config.globalProperties.$confirm = ElMessageBox.confirm
