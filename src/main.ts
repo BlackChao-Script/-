@@ -3,6 +3,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 //! 引入router路由
 import router from './router'
+//! 引入axios网络请求
+import request from './api/requests'
 //! 引入Element-plus所需组件
 import {
   ElButton,
@@ -30,7 +32,7 @@ import {
   ElDialog,
   ElButtonGroup,
   ElMessageBox,
-  ElTag
+  ElTag,
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -65,7 +67,8 @@ app.component(ElDialog.name, ElDialog)
 app.component(ElButtonGroup.name, ElButtonGroup)
 app.component(ElMessageBox.name, ElMessageBox)
 app.component(ElTag.name, ElTag)
-
+//! 注册全局方法
 app.config.globalProperties.$message = ElMessage
 app.config.globalProperties.$confirm = ElMessageBox.confirm
+app.config.globalProperties.$http = request
 app.mount('#app')

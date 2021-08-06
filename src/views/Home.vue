@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-//! 引入网络请求方法
 import { useRouter } from 'vue-router'
 //! 引入组件
 import sidebar from '../components/home/sidebar.vue'

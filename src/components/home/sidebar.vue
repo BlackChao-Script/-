@@ -50,8 +50,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, getCurrentInstance, ref } from '@vue/runtime-core'
-//! 引入网络请求方法
-import { MenuPermission } from '../../api/MenuPermission'
+//! 注册全局方法
 const { proxy } = getCurrentInstance() as any
 //! 左侧菜单数据
 let menuLists = reactive<any>({
@@ -72,10 +71,12 @@ const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 const getMenuPermission = () => {
-  MenuPermission().then((res) => {
-    if (res.meta.status !== 200) return proxy.$message.error(res.meta.msg)
-    menuLists.list = res.data
-  })
+  proxy.$http
+    .get('menus')
+    .then((res: any) => {
+      menuLists.list = res.data
+    })
+    .catch(() => proxy.$message.error('获取失败'))
 }
 onMounted(getMenuPermission)
 //! 保存链接的激活状态

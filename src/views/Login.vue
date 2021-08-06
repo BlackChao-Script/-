@@ -40,9 +40,8 @@
 import { reactive, ref } from '@vue/reactivity'
 import { getCurrentInstance } from '@vue/runtime-core'
 import { useRouter } from 'vue-router'
-//! 引入网络请求方法
-import { logins } from '../api/login'
-
+//! 注册全局方法
+const { proxy } = getCurrentInstance() as any
 //! 定义接口
 interface from {
   username: string
@@ -80,23 +79,27 @@ const resetLoginForm = () => {
 }
 //! 点击登录
 const $router = useRouter()
-const { proxy } = getCurrentInstance() as any
 const login = () => {
   loginFormRef.value.validate((valid: any) => {
     //* 失败执行
     if (!valid) return
     //* 成功执行
-    logins(loginFrom.username, loginFrom.password).then((res) => {
-      //* 失败执行
-      if (res.meta.status != 200) return proxy.$message.error('登录失败')
-      //* 成功执行
-      proxy.$message.success({
-        message: '登录成功',
-        type: 'success',
+    proxy.$http
+      .post('login', {
+        username: loginFrom.username,
+        password: loginFrom.password,
       })
-      window.sessionStorage.setItem('token', res.data.token)
-      $router.push('/home')
-    })
+      .then((res: any) => {
+        //* 失败执行
+        if (res.meta.status != 200) return proxy.$message.error('登录失败')
+        //* 成功执行
+        proxy.$message.success({
+          message: '登录成功',
+          type: 'success',
+        })
+        window.sessionStorage.setItem('token', res.data.token)
+        $router.push('/home')
+      })
   })
 }
 </script>

@@ -112,7 +112,7 @@
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="Froms.addFrom.email"></el-input>
       </el-form-item>
-      <el-form-item label="手机" prop="phonenumber">
+      <el-form-item label="手机" prop="mobile">
         <el-input v-model="Froms.addFrom.phonenumber"></el-input>
       </el-form-item>
     </el-form>
@@ -162,14 +162,8 @@
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, getCurrentInstance, ref } from '@vue/runtime-core'
-//! 引入网络请求方法
-import { getuserDataList } from '../../api/users/userDataList'
-import { setMgState } from '../../api/users/changeMgState'
-import { addUsers } from '../../api/users/addUsers'
-import { getinquireUser } from '../../api/users/inquireUser'
-import { setUser } from '../../api/users/compileUsers'
-import { deleteUser } from '../../api/users/deleteUser'
-
+//! 注册全局方法
+const { proxy } = getCurrentInstance() as any
 //! 用户列表区
 //* 传入请求方式的参数
 const queryInfo = reactive<any>({
@@ -186,28 +180,30 @@ const userlists = reactive<any>({
 })
 const total = ref<number>(0)
 //* 获取用户信息列表
-const { proxy } = getCurrentInstance() as any
+
 const getuserDataLists = () => {
-  getuserDataList(queryInfo.query, queryInfo.pagenum, queryInfo.pagesize).then(
-    (res) => {
-      if (res.meta.status !== 200)
-        return proxy.$message.error('获取用户列表失败')
+  proxy.$http
+    .get(
+      `users?query=${queryInfo.query}&pagenum=${queryInfo.pagenum}&pagesize=${queryInfo.pagesize}`
+    )
+    .then((res: any) => {
       userlists.userlist = res.data.users
       total.value = res.data.total
-      // console.log(res)
-    }
-  )
+    })
+    .catch(() => proxy.$message.error('获取用户列表失败'))
 }
 onMounted(getuserDataLists)
 //* 监听 switch 改变事件
 const changeSwitch = (switchInfo: any) => {
-  setMgState(switchInfo.id, switchInfo.mg_state).then((res) => {
-    if (res.meta.status !== 200) {
-      switchInfo.mg_state = !switchInfo.mg_state
-      return proxy.$message.error('更新用户状态失败')
-    }
-    proxy.$message.success('更新用户状态成功')
-  })
+  proxy.$http
+    .put(`users/${switchInfo.id}/state/${switchInfo.mg_state}`)
+    .then((res: any) => {
+      if (res.meta.status !== 200) {
+        switchInfo.mg_state = !switchInfo.mg_state
+        return proxy.$message.error('更新用户状态失败')
+      }
+      proxy.$message.success('更新用户状态成功')
+    })
 }
 //* 根据id删除用户数据
 const removerUserbyId = (id: number) => {
@@ -219,7 +215,7 @@ const removerUserbyId = (id: number) => {
       type: 'warning',
     })
     .then(() => {
-      deleteUser(id).then((res: any) => {
+      proxy.$http.delete(`/users/${id}`).then((res: any) => {
         if (res.meta.status !== 200) {
           return proxy.$message.error('删除失败')
         }
@@ -227,9 +223,7 @@ const removerUserbyId = (id: number) => {
         getuserDataLists()
       })
     })
-    .catch(() => {
-      proxy.$message.info('已取消删除')
-    })
+    .catch(() => proxy.$message.info('已取消删除'))
 }
 
 //! 分页区
@@ -258,22 +252,24 @@ const addUser = () => {
     //& 执行失败
     if (!valid) return
     //& 发起网络请求添加新用户
-    addUsers(
-      Froms.addFrom.username,
-      Froms.addFrom.password,
-      Froms.addFrom.email,
-      Froms.addFrom.phonenumber
-    ).then((res) => {
-      if (res.meta.status != 201) return proxy.$message.error('添加失败')
-      proxy.$message.success({
-        message: '添加成功',
-        type: 'success',
+    proxy.$http
+      .post('users', {
+        username: Froms.addFrom.username,
+        password: Froms.addFrom.password,
+        email: Froms.addFrom.email,
+        mobile: Froms.addFrom.mobile,
       })
-      //& 隐藏添加用户的对话框
-      dialogVisible.value = false
-      //& 重新获取用户数据
-      getuserDataLists()
-    })
+      .then((res: any) => {
+        proxy.$message.success({
+          message: '添加成功',
+          type: 'success',
+        })
+        //& 隐藏添加用户的对话框
+        dialogVisible.value = false
+        //& 重新获取用户数据
+        getuserDataLists()
+      })
+      .catch(() => proxy.$message.error('添加失败'))
   })
 }
 //* 自定义表单验证规则
@@ -295,7 +291,7 @@ const Froms = reactive<any>({
     username: '',
     password: '',
     email: '',
-    phonenumber: '',
+    mobile: '',
   },
   //& 添加表单的验证规则对象
   addFormRules: {
@@ -349,10 +345,10 @@ const Fromsa = reactive<any>({
     mobile: [{ validator: validatePhone.validatePhonenumber, trigger: 'blur' }],
   },
 })
-//* 用户数据编辑
+//* 根据id请求用户数据
 const handleEdit = (index: any, row: any) => {
   dialogVisiblea.value = true
-  getinquireUser(row.id).then((res) => {
+  proxy.$http.get(`/users/${row.id}`).then((res: any) => {
     Fromsa.alterFroms = res.data
   })
 }
@@ -360,23 +356,24 @@ const handleEdit = (index: any, row: any) => {
 const alterUser = () => {
   alterForm.value.validate((valid: any) => {
     if (!valid) return
-    setUser(
-      Fromsa.alterFroms.id,
-      Fromsa.alterFroms.email,
-      Fromsa.alterFroms.mobile
-    ).then((res) => {
-      if (res.meta.status !== 200) {
-        return proxy.$message.error('修改用户信息失败')
-      }
-      proxy.$message.success({
-        message: '修改成功',
-        type: 'success',
+    proxy.$http
+      .put('users/' + Fromsa.alterFroms.id, {
+        email: Fromsa.alterFroms.email,
+        mobile: Fromsa.alterFroms.mobile,
       })
-      //& 隐藏添加用户的对话框
-      dialogVisiblea.value = false
-      //& 重新获取用户数据
-      getuserDataLists()
-    })
+      .then((res: any) => {
+        if (res.meta.status !== 200) {
+          return proxy.$message.error('修改用户信息失败')
+        }
+        proxy.$message.success({
+          message: '修改成功',
+          type: 'success',
+        })
+        //& 隐藏添加用户的对话框
+        dialogVisiblea.value = false
+        //& 重新获取用户数据
+        getuserDataLists()
+      })
   })
 }
 </script>
