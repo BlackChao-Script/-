@@ -59,6 +59,7 @@
                   type="warning"
                   icon="el-icon-bank-card"
                   circle
+                  @click="setRole(scope.row)"
                 ></el-button>
               </el-tooltip>
             </el-col>
@@ -156,6 +157,34 @@
       <span class="dialog-footer">
         <el-button @click="dialogVisiblea = false">取 消</el-button>
         <el-button type="primary" @click="alterUser">确 定 </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <!-- 分配角色对话框 -->
+  <el-dialog
+    title="分配角色"
+    v-model="setRoleDialogVisible"
+    width="50%"
+    @close="setRoleDialogClosed"
+  >
+    <p>当前的用户：{{ userData.userInfos.username }}</p>
+    <p>当前的角色：{{ userData.userInfos.role_name }}</p>
+    <p>
+      分配新角色：
+      <el-select v-model="userData.selectedRoleId" placeholder="请选择">
+        <el-option
+          v-for="item in userData.rolesList"
+          :key="item.id"
+          :label="item.roleName"
+          :value="item.id"
+        >
+        </el-option>
+      </el-select>
+    </p>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -375,6 +404,57 @@ const alterUser = () => {
         getuserDataLists()
       })
   })
+}
+//! 分配角色对话框
+//* 控制分配角色对话框的显示与隐藏
+const setRoleDialogVisible = ref<boolean>(false)
+//* 数据
+const userData = reactive<any>({
+  //& 需要被分配角色的用户信息
+  userInfos: {},
+  //& 所有角色数据列表
+  rolesList: [],
+  //& 已选中的select数据
+  selectedRoleId: '',
+})
+//* 点击分配角色的事件
+const setRole = (row: any) => {
+  //* 把row的值赋值给userInfos
+  userData.userInfos = row
+  //* 在展示对话框之前,获取所有角色的列表
+  proxy.$http
+    .get('roles')
+    .then((res: any) => {
+      userData.rolesList = res.data
+    })
+    .catch(() => {
+      proxy.$message.error('获取角色列表失败')
+    })
+  //* 显示对话框
+  setRoleDialogVisible.value = true
+}
+//* 点击确定按钮分配角色
+const saveRoleInfo = () => {
+  if (!userData.selectedRoleId) {
+    return proxy.$message.warning('请选择要分配的角色')
+  }
+  proxy.$http
+    .put(`users/${userData.userInfos.id}`, {
+      rid: userData.selectedRoleId,
+    })
+    .then(() => {
+      proxy.$message.success('更新角色权限成功')
+      //& 隐藏添加用户的对话框
+      setRoleDialogVisible.value = false
+      //& 重新获取用户数据
+      getuserDataLists()
+    })
+    .catch(() => proxy.$message.error('分配角色失败'))
+}
+//* 关闭分配角色对话框时调用
+const setRoleDialogClosed = () => {
+  userData.selectedRoleId = ''
+  userData.userInfos = {}
 }
 </script>
 
