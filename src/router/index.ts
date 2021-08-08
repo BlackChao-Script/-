@@ -26,6 +26,10 @@ const routes: Array<RouteRecordRaw> = [
         path: 'rights',
         component: () => import('../views/power/rights.vue'),
       },
+      {
+        path: 'categories',
+        component: () => import('../views/goods/goodsCategory.vue'),
+      },
     ],
   },
 ]

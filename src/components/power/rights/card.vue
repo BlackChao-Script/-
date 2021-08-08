@@ -42,7 +42,6 @@ const data = reactive<any>({
 const getRightLists = () => {
   proxy.$http.get('rights/list').then((res: any) => {
     data.rightsList = res.data
-    console.log(data.rightsList)
   })
 }
 //* 在生命周期函数中调用请求方法
