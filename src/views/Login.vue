@@ -56,7 +56,7 @@ const loginFrom = reactive<from>({
   //* 用户名
   username: 'admin',
   //* 密码
-  password: '123456',
+  password: '',
 })
 //! 表单验证规则
 const loginFromRules = reactive<loginFrom>({

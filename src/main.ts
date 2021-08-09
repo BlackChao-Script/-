@@ -37,6 +37,10 @@ import {
   ElSelect,
   ElOption,
   ElResult,
+  ElAlert,
+  ElCascader,
+  ElTabs,
+  ElTabPane
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -75,6 +79,10 @@ app.component(ElTree.name, ElTree)
 app.component(ElOption.name, ElOption)
 app.component(ElSelect.name, ElSelect)
 app.component(ElResult.name, ElResult)
+app.component(ElAlert.name, ElAlert)
+app.component(ElCascader.name, ElCascader)
+app.component(ElTabs.name, ElTabs)
+app.component(ElTabPane.name, ElTabPane)
 
 //! 注册全局方法
 app.config.globalProperties.$message = ElMessage

@@ -30,6 +30,10 @@ const routes: Array<RouteRecordRaw> = [
         path: 'categories',
         component: () => import('../views/goods/goodsCategory.vue'),
       },
+      {
+        path: 'params',
+        component: () => import('../views/goods/goodSattributes.vue'),
+      },
     ],
   },
 ]
