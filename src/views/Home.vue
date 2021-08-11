@@ -3,7 +3,7 @@
     <!-- 头部区域 -->
     <el-header>
       <div class="header_title">Administrator</div>
-      <el-button type="info" @click="logout">退出登录</el-button>
+      <el-button type="info" @click="logout" :round="true">退出登录</el-button>
     </el-header>
     <!-- 页面主体区域 -->
     <el-container>
@@ -43,5 +43,8 @@ const logout = () => {
     font-size: 25px;
     flex-wrap: 700;
   }
+}
+.el-button{
+  background-color: #172438;
 }
 </style>

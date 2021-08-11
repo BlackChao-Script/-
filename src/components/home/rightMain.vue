@@ -11,5 +11,6 @@
 <style scoped lang="scss">
 .el-main {
   background-color: #c7c9cc;
+  height: 100%;
 }
 </style>

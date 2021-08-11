@@ -26,8 +26,8 @@
           <!-- 按钮 -->
           <div class="btns">
             <el-form-item>
-              <el-button @click="login">登录</el-button>
-              <el-button @click="resetLoginForm">重置</el-button>
+              <el-button @click="login" :round="true">登录</el-button>
+              <el-button @click="resetLoginForm" :round="true">重置</el-button>
             </el-form-item>
           </div>
         </el-form>

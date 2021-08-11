@@ -94,6 +94,7 @@ Path.value = window.sessionStorage.getItem('Path')
 }
 .el-aside {
   background-color: #172438;
+  overflow: hidden;
 }
 .toggle_button {
   font-size: 25px;

@@ -24,7 +24,9 @@
       <!-- 动态参数 -->
       <el-tab-pane label="动态参数" name="dynamic">
         <!-- 添加参数 -->
-        <el-button type="info" :disabled="isBtnDisabled">添加参数</el-button>
+        <el-button type="info" :disabled="isBtnDisabled" @click="addCategories"
+          >添加参数</el-button
+        >
         <!-- 动态参数数据表格 -->
         <el-table :border="true" :data="data.categoriesAttributesList">
           <el-table-column type="expand">
@@ -192,6 +194,11 @@ const changeSel = () => {
   }
   changeCascaderdata()
 }
+//* 点击添加参数时调用的事件
+const addCategories = () => {
+  console.log(data.cascaderdata[2])
+}
+const
 </script>
 
 <style scoped lang="scss">
