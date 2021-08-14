@@ -122,8 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from '@vue/reactivity'
-import { computed, getCurrentInstance, onMounted } from '@vue/runtime-core'
+import { computed, getCurrentInstance, onMounted, reactive } from '@vue/runtime-core'
 //! 注册全局使用方法
 const { proxy } = getCurrentInstance() as any
 //! 数据
@@ -198,7 +197,6 @@ const changeSel = () => {
 const addCategories = () => {
   console.log(data.cascaderdata[2])
 }
-const
 </script>
 
 <style scoped lang="scss">

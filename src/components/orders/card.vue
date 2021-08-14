@@ -6,7 +6,10 @@
       <el-col :span="10">
         <el-input v-model="data.searchDate" placeholder="请输入内容">
           <template #append>
-            <el-button icon="el-icon-search" @click="getOrderDataList"></el-button>
+            <el-button
+              icon="el-icon-search"
+              @click="getOrderDataList"
+            ></el-button>
           </template>
         </el-input>
       </el-col>

@@ -192,11 +192,14 @@ const removergoodsbyId = (id: any) => {
       type: 'warning',
     })
     .then(() => {
-      proxy.$http.delete(`goods/${id}`).then(() => {
-        proxy.$message.success('删除商品成功')
-        //* 重新请求商品数据列表
-        getgoodsLists()
-      }).catch(()=> proxy.$message.error('删除商品失败'))
+      proxy.$http
+        .delete(`goods/${id}`)
+        .then(() => {
+          proxy.$message.success('删除商品成功')
+          //* 重新请求商品数据列表
+          getgoodsLists()
+        })
+        .catch(() => proxy.$message.error('删除商品失败'))
     })
     .catch(() => proxy.$message.error('以取消删除此商品'))
 }

@@ -46,6 +46,7 @@ import {
   ElUpload,
   ElTimeline,
   ElTimelineItem,
+  ElProgress,
 } from 'element-plus'
 //! 引入Element-plus样式
 import 'element-plus/packages/theme-chalk/src/base.scss'
@@ -93,6 +94,7 @@ app.component(ElStep.name, ElStep)
 app.component(ElUpload.name, ElUpload)
 app.component(ElTimeline.name, ElTimeline)
 app.component(ElTimelineItem.name, ElTimelineItem)
+app.component(ElProgress.name, ElProgress)
 
 //! 注册全局方法
 app.config.globalProperties.$message = ElMessage
