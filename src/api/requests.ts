@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 // 设置baseURL
-
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 // 定义请求头 使用JSON格式
 axios.defaults.headers.post['Content-Type'] = 'application/json;charSet=UTF-8'

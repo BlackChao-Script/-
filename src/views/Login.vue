@@ -93,7 +93,9 @@ const login = () => {
           message: '登录成功',
           type: 'success',
         })
+        //* 保存token
         window.sessionStorage.setItem('token', res.data.token)
+        //* 跳转至home
         $router.push('/home')
       })
   })
